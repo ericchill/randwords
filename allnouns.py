@@ -9,18 +9,22 @@ all_verbs = []
 all_adjectives = []
 all_adverbs = []
 
-to_ignore = [
-    'curio.n.01',
-    'keepsake.n.01',
-    'shiner.n.02',
-    'triviality.n.03',
-    'floater.n.07',
-    'growth.n.07',
-    'location.n.01',
-    'region.n.03',
+"""to_ignore = (
+    'abstraction.n.06',
     'addition.n.01',
-    'space.n.02'
-    ]
+    'audio.n.04',
+    'bilocation.n.01',
+    'curio.n.01',
+    'growth.n.07',
+    'ingredient.n.01',
+    'making.n.03',
+    'natural_process.n.01',
+    'procedure.n.01',
+    'there.n.01',
+    'triviality.n.03',
+    'whereabouts.n.01'
+    )"""
+to_ignore = ()
 
 def load_words():
     global object_root
@@ -28,7 +32,7 @@ def load_words():
     global all_verbs
     global all_adjectives
     global all_adverbs
-    object_root = wn.synset('object.n.01')
+    object_root = wn.synset('physical_entity.n.01')
     all_nouns = list(wn.all_synsets(pos=wn.NOUN))
     all_verbs = list(wn.all_synsets(pos=wn.VERB))
     all_adjectives = list(wn.all_synsets(pos=wn.ADJ))
@@ -38,16 +42,22 @@ def word_from(synset):
     return synset.name().split('.')[0].replace('_', ' ')
 
 def print_tree(root, depth=0):
+    count = 0
     if root.name() not in to_ignore:
-        print(('%02d' % depth) + ': ' + (' ' * depth) + root.name())
         for h in root.hyponyms():
             if h.hyponyms():
-                print_tree(h, depth+1)
-    
+                count += print_tree(h, depth+1)
+        print(('%02d' % depth) + ': ' + (' ' * depth) + (' %4d   ' % count) + root.name())
+        count += 1
+    return count
+
 def main():
     load_words()
     print_tree(object_root)
+    #for a in all_adjectives:
+    #    print(word_from(a))
 
+        
 if __name__ == '__main__':
     main()
     
